@@ -1,0 +1,37 @@
+{
+  "name": "purescript-node-redis",
+  "version": "0.0.1",
+  "moduleType": [
+    "node"
+  ],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "output",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "purescript-aff": "0.10.x",
+    "purescript-argonaut": "0.5.x",
+    "purescript-datetime": "0.5.x",
+    "purescript-either": "0.1.x",
+    "purescript-maybe": "0.2.x",
+    "purescript-foldable-traversable": "0.3.x",
+    "purescript-foreign": "0.4.x"
+  },
+  "homepage": "https://github.com/dicefm/purescript-node-redis",
+  "authors": [
+    "SimonRichardson <simon@dice.fm>"
+  ],
+  "description": "PureScript Aff bindings for node-redis.",
+  "keywords": [
+    "purescript",
+    "node",
+    "aff",
+    "redis",
+    "ioredis"
+  ],
+  "license": "MIT"
+}
