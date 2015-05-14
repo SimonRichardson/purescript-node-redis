@@ -14,13 +14,16 @@
   ],
   "dependencies": {
     "purescript-aff": "0.10.x",
-    "purescript-argonaut": "0.5.x",
     "purescript-datetime": "0.5.x",
     "purescript-either": "0.1.x",
     "purescript-maybe": "0.2.x",
     "purescript-foldable-traversable": "0.3.x",
     "purescript-foreign": "0.4.x",
-    "purescript-uri": "master"
+    "purescript-uri": "master",
+    "purescript-nonempty-arrays": "~0.2.0",
+    "purescript-profunctor": "~0.2.1",
+    "purescript-strings": "~0.4.5",
+    "purescript-transformers": "~0.5.4"
   },
   "homepage": "https://github.com/dicefm/purescript-node-redis",
   "authors": [
