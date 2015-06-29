@@ -9,13 +9,8 @@ import Data.Tuple
 import qualified Data.Array.NonEmpty as NEL
 
 import Database.Redis.Commands.Property
-import Database.Redis.Commands.Selector
-
-data App = Root Selector
-         | Sub  Selector
 
 data Rule = Property (Key Unit) Value
-          | Nested   App [Rule]
 
 newtype QueryM a = S (Writer [Rule] a)
 
@@ -43,7 +38,3 @@ type Query = QueryM Unit
 
 key :: forall a. (Val a) => Key a -> a -> Query
 key k v = rule $ Property (cast k) (value v)
-
-infixr 5 ?
-(?) :: Selector -> Query -> Query
-(?) sel rs = rule $ Nested (Sub sel) (runS rs)

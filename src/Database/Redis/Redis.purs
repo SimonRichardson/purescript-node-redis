@@ -135,7 +135,7 @@ foreign import _close
 foreign import _query
   """
   function _query(query, client, canceler, errback, callback) {
-    console.log("Query:", query);
+    console.log("Query ->", query, "<-");
     var Command = require('ioredis/lib/command'),
         options = {
           replyEncoding: 'utf8'

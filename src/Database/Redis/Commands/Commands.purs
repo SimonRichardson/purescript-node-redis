@@ -4,11 +4,10 @@ import Data.Tuple
 
 import Database.Redis.Commands.Field
 import Database.Redis.Commands.Program
-import Database.Redis.Commands.Selector
 import Database.Redis.Commands.String
 
-get :: Selector
-get = fromString "GET"
+get :: forall a. Field a -> Query
+get = key (fromString "GET")
 
-set :: Selector
-set = fromString "SET"
+set :: forall a. Field a -> Query
+set = key (fromString "SET")
