@@ -56,7 +56,7 @@ collect' (Prefixed ks) (Prefixed vs) = (\(Tuple p k) -> maybe (Left (p <> k)) (R
 properties :: [Either String (Tuple String String)] -> String
 properties xs = intercalate "; " $  sheetRules <$> xs
   where 
-    sheetRules = either (\_ -> mempty) (\(Tuple k v) -> mconcat [k, ": ", v])
+    sheetRules = either (\_ -> mempty) (\(Tuple k v) -> mconcat [k, " ", v])
 
 nel :: forall a. [a] -> Maybe (NEL.NonEmpty a)
 nel []     = Nothing

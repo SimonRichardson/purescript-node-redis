@@ -66,3 +66,6 @@ instance valList :: (Val a) => Val [a] where
 
 instance valNonEmpty :: (Val a) => Val (NEL.NonEmpty a) where
   value = value <<< NEL.toArray
+
+noCommas :: forall a. (Val a) => [a] -> Value
+noCommas = intercalate (fromString " ") <<< (value <$>)
