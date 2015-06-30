@@ -73,7 +73,7 @@ query' :: forall e a
   -> (Eff (db :: DB | e) (Canceler (db :: DB | e)))
 query' q c eb cb = runFn5 _query q' c ignoreCancel eb cb
   where
-    q' = fromMaybe "" <<< renderedInline $ render q
+    q' = fromMaybe [[]] <<< renderedInline $ render q
 
 -- | Always ignore the cancel.
 ignoreCancel :: forall e a. a -> Canceler (db :: DB | e)
@@ -147,7 +147,7 @@ foreign import _query
     return canceler(client);
   }
   """ :: forall e a.  Fn5
-                      String
+                      [[String]]
                       Client
                       (Client -> Canceler (db :: DB | e))
                       (Error -> Eff (db :: DB | e) Unit)

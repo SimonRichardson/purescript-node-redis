@@ -11,9 +11,9 @@ import qualified Data.Array.NonEmpty as NEL
 import Database.Redis.Commands.Program
 import Database.Redis.Commands.Property
 
-newtype Inline = Inline String
+newtype Inline = Inline [[String]]
 
-getInline :: Inline -> String
+getInline :: Inline -> [[String]]
 getInline (Inline s) = s
 
 instance semigroupInline :: Semigroup Inline where
@@ -27,7 +27,7 @@ type Rendered = Maybe Inline
 render :: forall a. QueryM a -> Rendered
 render = rules <<< runS
 
-renderedInline :: Rendered -> Maybe String
+renderedInline :: Rendered -> Maybe [[String]]
 renderedInline (Just x) = Just $ getInline x
 renderedInline _        = Nothing
 
@@ -49,10 +49,10 @@ collect' (Prefixed ks) (Plain v)     = (\(Tuple p k) -> Right $ Tuple (p <> k) v
 collect' (Plain k) (Prefixed vs)     = (\(Tuple p v) -> Right $ Tuple k (p <> v)) <$> vs
 collect' (Prefixed ks) (Prefixed vs) = (\(Tuple p k) -> maybe (Left (p <> k)) (Right <<< Tuple (p <> k) <<< (p <>)) $ lookup p vs) <$> ks
 
-properties :: [Either String (Tuple String String)] -> String
-properties xs = intercalate "; " $  sheetRules <$> xs
+properties :: [Either String (Tuple String String)] -> [[String]]
+properties xs = sheetRules <$> xs
   where 
-    sheetRules = either (\_ -> mempty) (\(Tuple k v) -> mconcat [k, " ", v])
+    sheetRules = either (\_ -> mempty) (\(Tuple k v) -> mconcat [[k, v]])
 
 nel :: forall a. [a] -> Maybe (NEL.NonEmpty a)
 nel []     = Nothing
