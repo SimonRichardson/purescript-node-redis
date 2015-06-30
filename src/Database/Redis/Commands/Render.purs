@@ -32,17 +32,13 @@ renderedInline (Just x) = Just $ getInline x
 renderedInline _        = Nothing
 
 rules :: [Rule] -> Rendered
-rules rs = topRules
+rules rs = rule' (mapMaybe property rs)
   where 
     property (Property k v) = Just (Tuple k v)
     property _              = Nothing
 
-    topRules      = rule' (mapMaybe property rs)
-
 rule' :: forall a. [Tuple (Key a) Value] -> Rendered
-rule' props = (Inline <<< properties <<< NEL.toArray) <$> nel p
-  where 
-    p = props >>= collect
+rule' props = (Inline <<< properties <<< NEL.toArray) <$> nel (props >>= collect)
 
 collect :: forall a. Tuple (Key a) Value -> [Either String (Tuple String String)]
 collect (Tuple (Key ky) (Value v1)) = collect' ky v1
