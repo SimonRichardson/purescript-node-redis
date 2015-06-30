@@ -5,6 +5,7 @@ import Data.Maybe
 import Data.Monoid
 import Data.Profunctor.Strong
 import Data.Tuple
+import Data.Array
 import qualified Data.Array.NonEmpty as NEL
 
 import Database.Redis.Commands.String
@@ -67,5 +68,5 @@ instance valList :: (Val a) => Val [a] where
 instance valNonEmpty :: (Val a) => Val (NEL.NonEmpty a) where
   value = value <<< NEL.toArray
 
-noCommas :: forall a. (Val a) => [a] -> Value
-noCommas = intercalate (fromString " ") <<< (value <$>)
+comp :: forall a. (Val a) => [a] -> [Value]
+comp = mapMaybe (Just <<< value)

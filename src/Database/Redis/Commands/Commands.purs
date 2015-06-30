@@ -15,7 +15,7 @@ set :: forall a b. (Val b) => Field a -> b -> Query
 set a b = key (fromString "SET") <<< value $ tuple2 a b
 
 mget :: forall a. [Field a] -> Query
-mget = key (fromString "MGET") <<< noCommas
+mget = key (fromString "MGET") <<< comp
 
 mset :: forall a b. (Val b) => [Tuple2 (Field a) b] -> Query
-mset =  key (fromString "MSET") <<< noCommas
+mset =  key (fromString "MSET") <<< comp
