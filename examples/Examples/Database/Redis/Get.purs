@@ -1,18 +1,20 @@
 module Examples.Database.Redis.Get where
 
 import Database.Redis.Redis
-import Database.Redis.Commands
+import Database.Redis.Commands.Commands
+import Database.Redis.Commands.Field 
+import Database.Redis.Commands.Program
+import Database.Redis.Commands.Render
 
 import Control.Monad.Aff
 import Control.Monad.Eff
 import Control.Monad.Eff.Class
 import Control.Monad.Eff.Exception
 
-import Data.Array
 import Data.Either
 import Data.Event
 import Data.Maybe
-import Data.Tuple
+import Data.Tuple.Nested
 
 import Debug.Trace
 
@@ -32,19 +34,14 @@ uri = "redis://127.0.0.1:6379"
 main = launchAff $ do
   Right database <- attempt $ connect uri
 
-  query (MSet [Tuple "key" "value", Tuple "key" "value"]) database
-  res <- query x database
-  liftEff $ traceAny res
+  x <- query commands database
+  liftEff $ traceAny x
 
   close database
 
--- x :: Sort
--- x = Sort "list" ? do
---   by (field "hash:*" "field")
---   limit 2 3
---   get (name "gk")
---   get (name "#")
---   get (field "gh" "f*")
---   desc
---   alpha
---   store (name "store")
+commands :: Query
+commands = do
+  set (name "list") "hello"
+  get $ name "list"  
+  mset [tuple2 (name "x") "y", tuple2 (name "a") "b"]
+  mget [name "x", name "a"]

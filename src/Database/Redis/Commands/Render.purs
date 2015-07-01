@@ -11,9 +11,17 @@ import qualified Data.Array.NonEmpty as NEL
 import Database.Redis.Commands.Program
 import Database.Redis.Commands.Property
 
-newtype Inline = Inline [[String]]
+data Command = Command String [String]
 
-getInline :: Inline -> [[String]]
+instance semigroupCommand :: Semigroup Command where
+  (<>) (Command a b) (Command x y) = Command (a <> x) (b <> y)
+
+instance monoidCommand :: Monoid Command where
+  mempty = Command mempty mempty  
+
+newtype Inline = Inline [Command]
+
+getInline :: Inline -> [Command]
 getInline (Inline s) = s
 
 instance semigroupInline :: Semigroup Inline where
@@ -27,7 +35,7 @@ type Rendered = Maybe Inline
 render :: forall a. QueryM a -> Rendered
 render = rules <<< runS
 
-renderedInline :: Rendered -> Maybe [[String]]
+renderedInline :: Rendered -> Maybe [Command]
 renderedInline (Just x) = Just $ getInline x
 renderedInline _        = Nothing
 
@@ -50,10 +58,10 @@ collect' (Plain k) v = [Right (Tuple k (mapMaybe extract v))]
   where
     extract (Plain v) = Just v
 
-properties :: [Either String (Tuple String [String])] -> [[String]]
+properties :: [Either String (Tuple String [String])] -> [Command]
 properties xs = sheetRules <$> xs
   where 
-    sheetRules = either (\_ -> mempty) (\(Tuple k v) -> mconcat [[k] <> v])
+    sheetRules = either (\_ -> mempty) (\(Tuple k v) -> mconcat [Command k v])
 
 nel :: forall a. [a] -> Maybe (NEL.NonEmpty a)
 nel []     = Nothing

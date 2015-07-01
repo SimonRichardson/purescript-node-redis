@@ -29,7 +29,7 @@ foreign import data DB :: !
 foreign import data Client :: *
 
 type AffClient e   = Aff (db :: DB | e) Client
-type AffResult e a = Aff (db :: DB | e) a
+type AffResult e a = Aff (db :: DB | e) [a]
 type AffUnit e        = Aff (db :: DB | e) Unit
 
 -- | Makes a connection to the database.
@@ -69,11 +69,11 @@ query' :: forall e a
   .  Query
   -> Client
   -> (Error -> Eff (db :: DB | e) Unit)
-  -> (a -> Eff (db :: DB | e) Unit)
+  -> ([a] -> Eff (db :: DB | e) Unit)
   -> (Eff (db :: DB | e) (Canceler (db :: DB | e)))
 query' q c eb cb = runFn5 _query q' c ignoreCancel eb cb
   where
-    q' = fromMaybe [[]] <<< renderedInline $ render q
+    q' = fromMaybe ([Command "" []]) <<< renderedInline $ render q
 
 -- | Always ignore the cancel.
 ignoreCancel :: forall e a. a -> Canceler (db :: DB | e)
@@ -135,23 +135,39 @@ foreign import _close
 foreign import _query
   """
   function _query(query, client, canceler, errback, callback) {
-    console.log("Query ->", query, "<-");
     var Command = require('ioredis/lib/command'),
         options = {
           replyEncoding: 'utf8'
         },
-        command = new Command(query[0], query.slice(1), options, function(err, x) {
-          (err ? errback(err) : callback(x))();
-        });
-    client.sendCommand(command);
+        pipeline = client.pipeline(),
+        cmd, i,
+        snd = function(x) {
+          return Array.isArray(x[1]) ? x[1] : [x[1]];
+        },
+        concatMap = function(f, x) {
+          var res = [], i;
+          for (i = 0; i < x.length; i++) {
+            res.push(f(x[i]));
+          }
+          return res;
+        };
+    
+    for(i = 0; i < query.length; i++) {
+      cmd = query[i];
+      pipeline.sendCommand(new Command(cmd.value0, cmd.value1, options));
+    }
+
+    pipeline.exec(function(err, x) {
+      (err ? errback(err) : callback(concatMap(snd, x)))();
+    });
     return canceler(client);
   }
   """ :: forall e a.  Fn5
-                      [[String]]
+                      [Command]
                       Client
                       (Client -> Canceler (db :: DB | e))
                       (Error -> Eff (db :: DB | e) Unit)
-                      (a -> Eff (db :: DB | e) Unit)
+                      ([a] -> Eff (db :: DB | e) Unit)
                       (Eff (db :: DB | e) (Canceler (db :: DB | e)))   
 
 foreign import _ignoreCancel
