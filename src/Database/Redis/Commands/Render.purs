@@ -37,19 +37,23 @@ rules rs = rule' (mapMaybe property rs)
     property (Property k v) = Just (Tuple k v)
     property _              = Nothing
 
-rule' :: forall a. [Tuple (Key a) Value] -> Rendered
+rule' :: forall a. [Tuple (Key a) [Value]] -> Rendered
 rule' props = (Inline <<< properties <<< NEL.toArray) <$> nel (props >>= collect)
 
-collect :: forall a. Tuple (Key a) Value -> [Either String (Tuple String String)]
-collect (Tuple (Key ky) (Value v1)) = collect' ky v1
+collect :: forall a. Tuple (Key a) [Value] -> [Either String (Tuple String [String])]
+collect (Tuple (Key ky) v1) = collect' ky (mapMaybe extract v1)
+  where
+    extract (Value v) = Just v
 
-collect' :: Plain -> Plain -> [Either String (Tuple String String)]
-collect' (Plain k) (Plain v)         = [Right (Tuple k v)]
+collect' :: Plain -> [Plain] -> [Either String (Tuple String [String])]
+collect' (Plain k) v = [Right (Tuple k (mapMaybe extract v))]
+  where
+    extract (Plain v) = Just v
 
-properties :: [Either String (Tuple String String)] -> [[String]]
+properties :: [Either String (Tuple String [String])] -> [[String]]
 properties xs = sheetRules <$> xs
   where 
-    sheetRules = either (\_ -> mempty) (\(Tuple k v) -> mconcat [[k, v]])
+    sheetRules = either (\_ -> mempty) (\(Tuple k v) -> mconcat [[k] <> v])
 
 nel :: forall a. [a] -> Maybe (NEL.NonEmpty a)
 nel []     = Nothing

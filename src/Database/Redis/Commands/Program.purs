@@ -10,7 +10,7 @@ import qualified Data.Array.NonEmpty as NEL
 
 import Database.Redis.Commands.Property
 
-data Rule = Property (Key Unit) Value
+data Rule = Property (Key Unit) [Value]
 
 newtype QueryM a = S (Writer [Rule] a)
 

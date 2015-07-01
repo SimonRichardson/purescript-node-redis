@@ -44,25 +44,25 @@ instance monoidValue :: Monoid Value where
   mempty = Value mempty
 
 class Val a where
-  value :: a -> Value
+  value :: a -> [Value]
 
 instance valString :: Val String where
-  value = fromString
+  value = singleton <<< fromString
 
 instance valValue :: Val Value where
-  value = id
+  value = singleton
 
 instance valTuple :: (Val a, Val b) => Val (Tuple a b) where
-  value (Tuple a b) = value a <> fromString " " <> value b
+  value (Tuple a b) = value a <> value b
 
 instance valNumber :: Val Number where
-  value = fromString <<< show
+  value = singleton <<< fromString <<< show
 
 instance valList :: (Val a) => Val [a] where
-  value = intercalate (fromString ", ") <<< (value <$>)
+  value = comp
 
 instance valNonEmpty :: (Val a) => Val (NEL.NonEmpty a) where
   value = value <<< NEL.toArray
 
 comp :: forall a. (Val a) => [a] -> [Value]
-comp = mapMaybe (Just <<< value)
+comp = concatMap value
