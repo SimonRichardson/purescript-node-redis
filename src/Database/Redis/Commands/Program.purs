@@ -3,36 +3,39 @@ module Database.Redis.Commands.Program where
 import Control.Monad.Writer
 import Control.Monad.Writer.Class
 
+import Data.Array
 import Data.Maybe
+import Data.NonEmpty
 import Data.Profunctor.Strong
 import Data.Tuple
-import qualified Data.Array.NonEmpty as NEL
 
 import Database.Redis.Commands.Property
 
-data Rule = Property (Key Unit) [Value]
+import Prelude
 
-newtype QueryM a = S (Writer [Rule] a)
+data Rule = Property (Key Unit) (Array Value)
+
+newtype QueryM a = S (Writer (Array Rule) a)
 
 instance functorQueryM :: Functor QueryM where
-  (<$>) f (S w) = S $ f <$> w
+  map f (S w) = S $ f <$> w
 
 instance applyQueryM :: Apply QueryM where
-  (<*>) (S f) (S w) = S $ f <*> w
+  apply (S f) (S w) = S $ f <*> w
 
 instance bindQueryM :: Bind QueryM where
-  (>>=) (S w) f = S $ w >>= (\(S w') -> w') <<< f
+  bind (S w) f = S $ w >>= (\(S w') -> w') <<< f
 
 instance applicativeQueryM :: Applicative QueryM where
   pure = S <<< pure
 
 instance monadQueryM :: Monad QueryM
 
-runS :: forall a. QueryM a -> [Rule]
+runS :: forall a. QueryM a -> Array Rule
 runS (S s) = execWriter s
 
 rule :: Rule -> Query
-rule = S <<< tell <<< (:[])
+rule = S <<< tell <<< singleton
 
 type Query = QueryM Unit
 
