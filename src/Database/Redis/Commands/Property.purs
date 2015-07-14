@@ -1,14 +1,16 @@
 module Database.Redis.Commands.Property where
 
+import Data.Array
 import Data.Foldable
 import Data.Maybe
 import Data.Monoid
+import Data.NonEmpty
 import Data.Profunctor.Strong
 import Data.Tuple
-import Data.Array
-import qualified Data.Array.NonEmpty as NEL
 
 import Database.Redis.Commands.String
+
+import Prelude
 
 data Plain = Plain String
 
@@ -16,7 +18,7 @@ instance isStringPlain :: IsString Plain where
   fromString = Plain
 
 instance semigroupPlain :: Semigroup Plain where
-  (<>) (Plain x) (Plain y) = Plain $ x <> y
+  append (Plain x) (Plain y) = Plain $ x <> y
   
 instance monoidPlain :: Monoid Plain where
   mempty = Plain mempty
@@ -38,13 +40,13 @@ instance isStringValue :: IsString Value where
   fromString = Value <<< fromString
 
 instance semigroupValue :: Semigroup Value where
-  (<>) (Value a) (Value b) = Value $ a <> b
+  append (Value a) (Value b) = Value $ a <> b
 
 instance monoidValue :: Monoid Value where
   mempty = Value mempty
 
 class Val a where
-  value :: a -> [Value]
+  value :: a -> (Array Value)
 
 instance valString :: Val String where
   value = singleton <<< fromString
@@ -58,11 +60,11 @@ instance valTuple :: (Val a, Val b) => Val (Tuple a b) where
 instance valNumber :: Val Number where
   value = singleton <<< fromString <<< show
 
-instance valList :: (Val a) => Val [a] where
+instance valList :: (Val a) => Val (Array a) where
   value = comp
 
-instance valNonEmpty :: (Val a) => Val (NEL.NonEmpty a) where
-  value = value <<< NEL.toArray
+instance valNonEmpty :: (Val a) => Val (NonEmpty Array a) where
+  value = value <<< oneOf
 
-comp :: forall a. (Val a) => [a] -> [Value]
+comp :: forall a. (Val a) => (Array a) -> (Array Value)
 comp = concatMap value

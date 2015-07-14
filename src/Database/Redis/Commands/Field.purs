@@ -6,6 +6,8 @@ import Database.Redis.Commands.String
 import Data.Array
 import Data.Tuple.Nested
 
+import Prelude
+
 newtype Field a = Field Value
 
 instance valField :: Val (Field a) where
