@@ -1,10 +1,11 @@
 module Examples.Database.Redis.Get where
 
 import Database.Redis.Redis
-import Database.Redis.Commands.Commands
 import Database.Redis.Commands.Field 
 import Database.Redis.Commands.Program
 import Database.Redis.Commands.Render
+import Database.Redis.Commands.Strings
+import Database.Redis.Commands.Values
 
 import Control.Monad.Aff
 import Control.Monad.Eff
@@ -15,7 +16,7 @@ import Data.Either
 import Data.Maybe
 import Data.Tuple.Nested
 
-import Prelude
+import Prelude (($), bind, Unit(..))
 
 foreign import logAny :: forall e a. a -> Eff (console :: CONSOLE | e) Unit
 
@@ -34,5 +35,5 @@ commands :: Query
 commands = do
   set (name "list") "hello"
   get $ name "list"  
-  mset [tuple2 (name "x") "y", tuple2 (name "a") "b"]
-  mget [name "x", name "a"]
+  mSet [values (name "x") "y", values (name "a") "b"]
+  mGet [name "x", name "a"]
