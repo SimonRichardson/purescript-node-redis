@@ -35,5 +35,5 @@ commands :: Query
 commands = do
   set (name "list") "hello"
   get $ name "list"  
-  mSet [values (name "x") "y", values (name "a") "b"]
+  mSet [(name "x") ~> "y", (name "a") ~> "b"]
   mGet [name "x", name "a"]

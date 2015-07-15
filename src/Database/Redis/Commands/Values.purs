@@ -15,3 +15,8 @@ instance valValues :: (Val b) => Val (Values a b) where
 
 values :: forall a b. (Val b) => Field a -> b -> Values a b
 values a b = Values $ tuple2 a b
+
+infix 0 ~>
+
+(~>) :: forall a b. (Val b) => Field a -> b -> Values a b
+(~>) = values
