@@ -1,6 +1,6 @@
 {
   "name": "purescript-node-redis",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "moduleType": [
     "node"
   ],
@@ -13,16 +13,16 @@
     "tests"
   ],
   "dependencies": {
-    "purescript-aff": "^0.11.0",
-    "purescript-either": "^0.2.0",
-    "purescript-maybe": "^0.3.0",
-    "purescript-foldable-traversable": "^0.4.0",
-    "purescript-foreign": "^0.5.0",
-    "purescript-uri": "^0.1.0",
-    "purescript-nonempty": "^0.1.1",
-    "purescript-profunctor": "^0.3.0",
-    "purescript-strings": "^0.5.0",
-    "purescript-transformers": "^0.6.0"
+    "purescript-aff": "^3.1.0",
+    "purescript-either": "^3.0.0",
+    "purescript-maybe": "^3.0.0",
+    "purescript-foldable-traversable": "^3.0.0",
+    "purescript-foreign": "^4.0.0",
+    "purescript-uri": "^3.0.1",
+    "purescript-nonempty": "^4.0.0",
+    "purescript-profunctor": "^3.0.0",
+    "purescript-strings": "^3.1.0",
+    "purescript-transformers": "^3.3.0"
   },
   "homepage": "https://github.com/dicefm/purescript-node-redis",
   "authors": [
@@ -36,5 +36,9 @@
     "redis",
     "ioredis"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "purescript-psci-support": "^3.0.0",
+    "purescript-debug": "^3.0.0"
+  }
 }

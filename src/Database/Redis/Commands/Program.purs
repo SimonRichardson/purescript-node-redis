@@ -5,7 +5,6 @@ import Control.Monad.Writer.Class
 
 import Data.Array
 import Data.Maybe
-import Data.NonEmpty
 import Data.Profunctor.Strong
 import Data.Tuple
 

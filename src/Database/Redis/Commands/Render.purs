@@ -5,7 +5,7 @@ import Data.Either
 import Data.Foldable
 import Data.Maybe
 import Data.Monoid
-import Data.NonEmpty
+import Data.NonEmpty as NE
 import Data.Tuple
 
 import Database.Redis.Commands.Program
@@ -48,7 +48,7 @@ rules rs = rule' (mapMaybe property rs)
     property _              = Nothing
 
 rule' :: forall a. (Array (Tuple (Key a) (Array Value))) -> Rendered
-rule' props = (Inline <<< properties <<< oneOf) <$> nel (props >>= collect)
+rule' props = (Inline <<< properties <<< NE.oneOf) <$> nel (props >>= collect)
 
 collect :: forall a. Tuple (Key a) (Array Value) -> (Array (Either String (Tuple String (Array String))))
 collect (Tuple (Key ky) v1) = collect' ky (mapMaybe extract v1)
@@ -63,7 +63,7 @@ collect' (Plain k) v = [Right (Tuple k (mapMaybe extract v))]
 properties :: (Array (Either String (Tuple String (Array String)))) -> (Array Command)
 properties xs = sheetRules <$> xs
   where 
-    sheetRules = either (\_ -> mempty) (\(Tuple k v) -> mconcat [Command k v])
+    sheetRules = either (\_ -> mempty) (\(Tuple k v) -> fold [Command k v])
 
-nel :: forall a. (Array a) -> Maybe (NonEmpty Array a)
-nel arr = (uncons arr) >>= (\x -> Just $ x.head :| x.tail)
+nel :: forall a. (Array a) -> Maybe (NE.NonEmpty Array a)
+nel arr = (uncons arr) >>= (\x -> Just $ x.head NE.:| x.tail)
