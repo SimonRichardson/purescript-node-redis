@@ -1,14 +1,12 @@
 module Database.Redis.Commands.Range where
 
-import Data.Tuple
-import Data.Tuple.Nested
-
+import Data.Tuple (Tuple(..))
 import Prelude (($))
 
-newtype Range s = Range (Tuple2 s s)
+newtype Range s = Range (Tuple s s)
 
 range :: forall a. a -> a -> Range a
-range x y = Range $ tuple2 x y
+range x y = Range $ Tuple x y
 
 toArray :: forall a. Range a -> Array a
 toArray (Range (Tuple a b)) = [a, b]

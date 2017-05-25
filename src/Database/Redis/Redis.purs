@@ -7,29 +7,27 @@ module Database.Redis.Redis
   , query, query'
   ) where
 
-import Prelude
+import Prelude (Unit, show, ($), (<<<))
 
-import Control.Monad.Aff (Aff(), makeAff, makeAff', Canceler(..), nonCanceler)
-import Control.Monad.Eff (Eff())
-import Control.Monad.Eff.Class
+import Control.Monad.Aff (Aff(), makeAff', Canceler, nonCanceler)
+import Control.Monad.Eff (Eff(), kind Effect)
 import Control.Monad.Eff.Exception (Error(), error)
 import Control.Monad.Error.Class (throwError)
 
-import Data.Array
-import Data.Either
-import Data.Function (Fn3(), runFn3, Fn4(), runFn4, Fn5(), runFn5, Fn6())
-import Data.Maybe
-import Data.URI
+import Data.Either (Either(..))
+import Data.Function.Uncurried (Fn3(), runFn3, Fn4(), runFn4, Fn5(), runFn5)
+import Data.Maybe (fromMaybe)
+import Data.URI (printURIRef, runParseURIRef)
 
-import Database.Redis.Commands.Program
-import Database.Redis.Commands.Render
+import Database.Redis.Commands.Program (Query)
+import Database.Redis.Commands.Render (Command(..), render, renderedInline)
 
-import Text.Parsing.StringParser
+import Text.Parsing.StringParser (ParseError)
 
 -- | The effect type for DB request made with Redis
-foreign import data DB :: !
+foreign import data DB :: Effect
 
-foreign import data Client :: *
+foreign import data Client :: Type
 
 type AffClient e   = Aff (db :: DB | e) Client
 type AffResult e a = Aff (db :: DB | e) (Array a)

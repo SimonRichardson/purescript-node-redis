@@ -1,17 +1,25 @@
 module Database.Redis.Commands.Program where
 
-import Control.Monad.Writer
-import Control.Monad.Writer.Class
+import Control.Monad.Writer (Writer, execWriter)
+import Control.Monad.Writer.Class (tell)
 
-import Data.Array
-import Data.Maybe
-import Data.NonEmpty
-import Data.Profunctor.Strong
-import Data.Tuple
+import Data.Array (singleton)
 
-import Database.Redis.Commands.Property
+import Database.Redis.Commands.Property (class Val, Key, Value, cast, value)
 
-import Prelude
+import Prelude ( class Applicative
+               , class Apply
+               , class Bind
+               , class Functor
+               , class Monad
+               , Unit
+               , pure
+               , ($)
+               , (<$>)
+               , (<*>)
+               , (<<<)
+               , (>>=)
+               )
 
 data Rule = Property (Key Unit) (Array Value)
 

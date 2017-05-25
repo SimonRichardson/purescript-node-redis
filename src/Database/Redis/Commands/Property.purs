@@ -1,16 +1,13 @@
 module Database.Redis.Commands.Property where
 
-import Data.Array
-import Data.Foldable
-import Data.Maybe
-import Data.Monoid
-import Data.NonEmpty
-import Data.Profunctor.Strong
-import Data.Tuple
+import Data.Array (concatMap, singleton)
+import Data.Monoid (class Monoid, mempty)
+import Data.NonEmpty as NE
+import Data.Tuple (Tuple(..))
 
-import Database.Redis.Commands.String
+import Database.Redis.Commands.String (class IsString, fromString)
 
-import Prelude
+import Prelude (class Semigroup, Unit, show, ($), (<<<), (<>))
 
 data Plain = Plain String
 
@@ -66,8 +63,8 @@ instance valInt :: Val Int where
 instance valList :: (Val a) => Val (Array a) where
   value = comp
 
-instance valNonEmpty :: (Val a) => Val (NonEmpty Array a) where
-  value = value <<< oneOf
+instance valNonEmpty :: (Val a) => Val (NE.NonEmpty Array a) where
+  value = value <<< NE.oneOf
 
 comp :: forall a. (Val a) => (Array a) -> (Array Value)
 comp = concatMap value
