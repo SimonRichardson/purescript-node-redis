@@ -1,12 +1,11 @@
 module Database.Redis.Commands.Field where 
 
-import Database.Redis.Commands.Property
-import Database.Redis.Commands.String
+import Database.Redis.Commands.Property (class Val, Value)
+import Database.Redis.Commands.String (fromString)
 
-import Data.Array
-import Data.Tuple.Nested
+import Data.Array (singleton)
 
-import Prelude
+import Prelude (($), (<>))
 
 newtype Field a = Field Value
 

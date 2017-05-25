@@ -1,16 +1,14 @@
 module Database.Redis.Commands.Strings where
 
-import Data.Array
-import Data.Foldable
-import Data.Tuple
-import Data.Tuple.Nested
+import Data.Tuple (Tuple(..))
+import Data.Tuple.Nested ((/\))
 
-import Database.Redis.Commands.Field
-import Database.Redis.Commands.Program
-import Database.Redis.Commands.Property
-import Database.Redis.Commands.Range (Range(..), toArray)
-import Database.Redis.Commands.String
-import Database.Redis.Commands.Values
+import Database.Redis.Commands.Field (Field)
+import Database.Redis.Commands.Program (Query, key)
+import Database.Redis.Commands.Property (class Val, comp, value)
+import Database.Redis.Commands.Range (Range, toArray)
+import Database.Redis.Commands.String (fromString)
+import Database.Redis.Commands.Values (Values)
 
 import Prelude ((<<<), ($))
 

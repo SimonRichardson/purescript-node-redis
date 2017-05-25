@@ -1,17 +1,17 @@
 module Database.Redis.Commands.Render where
 
-import Data.Array
-import Data.Either
-import Data.Foldable
-import Data.Maybe
-import Data.Monoid
+import Data.Array (mapMaybe, uncons)
+import Data.Either (Either(..), either)
+import Data.Foldable (fold)
+import Data.Maybe (Maybe(..))
+import Data.Monoid (class Monoid, mempty)
 import Data.NonEmpty as NE
-import Data.Tuple
+import Data.Tuple (Tuple(..))
 
-import Database.Redis.Commands.Program
-import Database.Redis.Commands.Property
+import Database.Redis.Commands.Program (QueryM, Rule(..), runS)
+import Database.Redis.Commands.Property (Key(..), Plain(..), Value(..))
 
-import Prelude
+import Prelude (class Semigroup, ($), (<$>), (<<<), (<>), (>>=))
 
 data Command = Command String (Array String)
 
@@ -45,7 +45,6 @@ rules :: (Array Rule) -> Rendered
 rules rs = rule' (mapMaybe property rs)
   where 
     property (Property k v) = Just (Tuple k v)
-    property _              = Nothing
 
 rule' :: forall a. (Array (Tuple (Key a) (Array Value))) -> Rendered
 rule' props = (Inline <<< properties <<< NE.oneOf) <$> nel (props >>= collect)
@@ -58,7 +57,7 @@ collect (Tuple (Key ky) v1) = collect' ky (mapMaybe extract v1)
 collect' :: Plain -> (Array Plain) -> (Array (Either String (Tuple String (Array String))))
 collect' (Plain k) v = [Right (Tuple k (mapMaybe extract v))]
   where
-    extract (Plain v) = Just v
+    extract (Plain v') = Just v'
 
 properties :: (Array (Either String (Tuple String (Array String)))) -> (Array Command)
 properties xs = sheetRules <$> xs

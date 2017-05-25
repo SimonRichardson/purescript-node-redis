@@ -1,11 +1,11 @@
 module Database.Redis.Commands.Values where
 
-import Data.Tuple
+import Data.Tuple (Tuple(..))
 
-import Database.Redis.Commands.Field
-import Database.Redis.Commands.Property
+import Database.Redis.Commands.Field (Field)
+import Database.Redis.Commands.Property (class Val, value)
 
-import Prelude
+import Prelude (($))
 
 newtype Values a b = Values (Tuple (Field a) b)
 
